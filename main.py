@@ -20,6 +20,7 @@ import asyncio
 import aiohttp
 from docx import Document
 import io
+from threading import Lock
 
 try:
     from reportlab.lib import colors
@@ -49,9 +50,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-print("Loading SentenceTransformer model...")
-model = SentenceTransformer('all-MiniLM-L6-v2')
-print("Model loaded.")
+model = None
+internal_embeddings = None
+ai_reference_embeddings = None
+semantic_reference_embeddings = None
+_model_init_lock = Lock()
 
 INTERNAL_DB = [
     "Artificial intelligence is transforming industries and modern businesses.",
@@ -59,7 +62,6 @@ INTERNAL_DB = [
     "Deep learning is a subset of machine learning using neural networks.",
     "Machine learning allows computers to learn from data without explicit programming."
 ]
-internal_embeddings = model.encode(INTERNAL_DB)
 
 AI_REFERENCE_DB = [
     "In conclusion, this approach offers a scalable and efficient solution for modern organizations.",
@@ -75,9 +77,30 @@ AI_REFERENCE_DB = [
     "Here are some project ideas you can build using this technology.",
     "Why it is good: it is practical, easy to implement, and demonstrates end-to-end AI capabilities.",
 ]
-ai_reference_embeddings = model.encode(AI_REFERENCE_DB)
 SEMANTIC_REFERENCE_DB = INTERNAL_DB + AI_REFERENCE_DB
-semantic_reference_embeddings = model.encode(SEMANTIC_REFERENCE_DB)
+
+
+def ensure_model_resources_loaded():
+    global model, internal_embeddings, ai_reference_embeddings, semantic_reference_embeddings
+
+    if model is not None:
+        return
+
+    with _model_init_lock:
+        if model is not None:
+            return
+
+        print("Loading SentenceTransformer model...")
+        loaded_model = SentenceTransformer('all-MiniLM-L6-v2')
+        loaded_internal_embeddings = loaded_model.encode(INTERNAL_DB)
+        loaded_ai_reference_embeddings = loaded_model.encode(AI_REFERENCE_DB)
+        loaded_semantic_embeddings = loaded_model.encode(SEMANTIC_REFERENCE_DB)
+
+        model = loaded_model
+        internal_embeddings = loaded_internal_embeddings
+        ai_reference_embeddings = loaded_ai_reference_embeddings
+        semantic_reference_embeddings = loaded_semantic_embeddings
+        print("Model loaded.")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -731,6 +754,8 @@ async def check_plagiarism(
         sentences = split_into_sentences(source_text)
         if not sentences:
             return {"error": "No valid sentences found in the provided text."}
+
+        ensure_model_resources_loaded()
 
         results = []
         plagiarized_count = 0
