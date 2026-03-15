@@ -5,7 +5,7 @@ A FastAPI-based plagiarism checker that analyzes text from pasted input or uploa
 - Potential plagiarism (internal database + web snippet matching)
 - AI-likely writing patterns (heuristics + semantic similarity)
 - Sentence-level explainability and confidence
-- Downloadable analysis reports (HTML/PDF)
+- Downloadable analysis reports (PDF)
 
 ## Features
 
@@ -71,13 +71,6 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-macOS/Linux:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
 ### 3) Install dependencies
 
 ```bash
@@ -93,7 +86,6 @@ python main.py
 Server starts at:
 
 - App UI: http://127.0.0.1:8000/
-- OpenAPI docs: http://127.0.0.1:8000/docs
 
 Alternative run command:
 
@@ -127,7 +119,7 @@ Analyzes text or file input.
 Form fields:
 
 - `text` (optional string)
-- `file` (optional UploadFile: .pdf, .docx, .txt)
+- `file` (optional UploadFile: .pdf, .txt)
 - `student_name` (optional string)
 - `assignment_name` (optional string)
 - `submission_date` (optional string)
@@ -157,15 +149,9 @@ Downloads a report by token.
 Query params:
 
 - `token` (required)
-- `format` (`html` or `pdf`, default `html`)
+- `format` (`pdf`, default `html`)
 
-## Example: Check Text from Terminal
 
-```bash
-curl -X POST "http://127.0.0.1:8000/api/check" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "text=Machine learning allows computers to learn from data without explicit programming."
-```
 
 ## Notes and Limitations
 
@@ -183,22 +169,4 @@ A helper test script exists:
 It runs a local server thread and posts a sample PDF (`dummy.pdf`) to `/api/check`.
 Ensure that `dummy.pdf` exists in the project root before running it.
 
-## Troubleshooting
 
-- If PDF export fails, ensure `reportlab` is installed:
-
-```bash
-pip install reportlab
-```
-
-- If no text is extracted from PDF:
-  - The PDF may be scanned/image-only.
-  - Run OCR preprocessing before upload.
-
-- If web matches are low/unavailable:
-  - Check internet connectivity.
-  - Retry (web endpoint structure can vary).
-
-## License
-
-Add your preferred license here (for example: MIT).
