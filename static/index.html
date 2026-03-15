@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced AI Plagiarism Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                    <path d="M12 8v4"></path>
+                    <path d="M12 16h.01"></path>
+                </svg>
+            </div>
+            <h1>Advanced AI Plagiarism Checker</h1>
+            <p>Detect AI-generated and internet-copied content with powerful semantic search.</p>
+        </header>
+
+        <div class="main-card glass-panel">
+            <div class="input-section">
+                <!-- File Upload -->
+                <div class="file-upload-wrapper">
+                    <input type="file" id="fileInput" accept=".pdf,.docx,.txt" class="file-input" />
+                    <label for="fileInput" class="file-label">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span id="file-name">Upload PDF or DOCX file</span>
+                    </label>
+                </div>
+                
+                <div class="divider">
+                    <span>OR PASTE TEXT</span>
+                </div>
+
+                <!-- Text Area -->
+                <textarea id="textInput" placeholder="Enter or paste your text here (minimum a few sentences)..."></textarea>
+
+                <div class="actions">
+                    <button class="btn btn-secondary" id="clearBtn">
+                        Clear Text
+                    </button>
+                    <button class="btn btn-primary" id="checkBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Check Plagiarism & AI Usage
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-container hidden">
+            <div class="spinner"></div>
+            <p>Analyzing plagiarism patterns, AI-writing signals, and web sources...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-container hidden">
+            <div class="results-actions">
+                <button class="btn btn-primary" id="downloadPdfReportBtn" type="button">
+                    Download PDF Report
+                </button>
+            </div>
+            
+            <div class="score-card glass-panel">
+                <h2>Analysis Complete</h2>
+                <div class="score-grid">
+                    <div class="score-display">
+                        <div class="score-circle">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg"
+                                  d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                />
+                                <path class="circle" id="scoreCirclePath"
+                                  stroke-dasharray="0, 100"
+                                  d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                />
+                            </svg>
+                            <div class="score-text" id="scoreText">0%</div>
+                        </div>
+                        <div class="score-details">
+                            <h3 id="scoreTitle">Original Content</h3>
+                            <p id="scoreSubtitle">0 out of 0 sentences match existing sources.</p>
+                        </div>
+                    </div>
+
+                    <div class="score-display">
+                        <div class="score-circle">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg"
+                                  d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                />
+                                <path class="circle" id="aiScoreCirclePath"
+                                  stroke-dasharray="0, 100"
+                                  d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                />
+                            </svg>
+                            <div class="score-text" id="aiScoreText">0%</div>
+                        </div>
+                        <div class="score-details">
+                            <h3 id="aiScoreTitle">Low AI Usage Probability</h3>
+                            <p id="aiScoreSubtitle">0 out of 0 sentences show AI-like writing patterns.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="highlighted-text glass-panel">
+                    <h3>Highlighted Text</h3>
+                    <p class="legend">
+                        <span class="plagiarized-badge"></span> Potential Plagiarism
+                        <span class="ai-badge"></span> AI-Likely Writing
+                        <span class="both-badge"></span> Both Signals
+                    </p>
+                    <div id="textDisplay" class="text-content"></div>
+                    <div id="sentenceExplainContainer" class="sentence-explain-list"></div>
+                </div>
+
+                <div class="sources-list glass-panel">
+                    <h3>Matched Sources</h3>
+                    <h4>Internal Database Matches</h4>
+                    <div id="internalSourcesContainer" class="sources-wrapper"></div>
+                    <h4 class="sources-subheading">Internet Matches</h4>
+                    <div id="internetSourcesContainer" class="sources-wrapper">
+                        <!-- Sources injected here -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

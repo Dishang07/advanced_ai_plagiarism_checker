@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-multipart
+sentence-transformers
+scikit-learn
+requests
+beautifulsoup4
+pymupdf
+aiohttp
+python-docx
+reportlab
